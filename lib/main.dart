@@ -16,8 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      //menghilangkan tulisan debug pada aplikasi
       debugShowCheckedModeBanner: false,
+
+      //initial route ke login, berfungsi agar ketika 
+      //masuk ke aplikasi akan langsung ke route login
       initialRoute: '/login',
+
+      //routes berfungsi menginisiasi alamat dari semua page
       routes: {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),

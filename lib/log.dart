@@ -14,12 +14,15 @@ class LogPage extends StatefulWidget {
 }
 
 class _LogPageState extends State<LogPage> {
+
+  //API dari db untuk read data lokasi
   Future<List<dynamic>> getData() async {
     final response =
         await http.get(Uri.parse("http://10.0.2.2/no-banjir/get.php"));
     return json.decode(response.body);
   }
 
+  //API dari db untuk read data detail
   Future<List<dynamic>> getDetail(String nodeid) async {
     final response = await http
         .get(Uri.parse("http://10.0.2.2/no-banjir/detail.php?node_id=$nodeid"));
@@ -28,6 +31,8 @@ class _LogPageState extends State<LogPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    //argumen list lokasi dimasukkan ke dalam list
     dynamic list = ModalRoute.of(context)!.settings.arguments;
     String node = list[0]['node_id'].toString();
     return Scaffold(
@@ -48,10 +53,7 @@ class _LogPageState extends State<LogPage> {
           }
         },
       ),
-      body: /*Center(
-        child: Text(node),
-      ),*/
-          FutureBuilder<List>(
+      body: FutureBuilder<List>(
         future: getDetail(node),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -69,6 +71,8 @@ class _LogPageState extends State<LogPage> {
   }
 }
 
+//class drawlist berfungsi untuk membuat drawer yang berisi data dari lokasi
+//yang akan diarahkan ke halaman log dan detail
 class DrawList extends StatefulWidget {
   final List<dynamic> list;
   const DrawList({super.key, required this.list});
@@ -170,16 +174,11 @@ class ItemList extends StatefulWidget {
   State<ItemList> createState() => _ItemListState();
 }
 
-class ChartData {
-  ChartData(this.x, this.y);
-  final String x;
-  final double y;
-}
-
 class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     if (widget.detail.length != 0) {
+      //jika data tidak kosong
       return Container(
         padding: EdgeInsets.all(10),
         alignment: Alignment.topCenter,
@@ -226,19 +225,24 @@ class _ItemListState extends State<ItemList> {
                       DataColumn(label: Center(child: Text('Curah Hujan'))),
                     ],
                     rows: <DataRow>[
+                      //perulangan untuk index
                       for (int i = 0; i < widget.detail.length; i++)
                         DataRow(
                           cells: <DataCell>[
                             DataCell(Center(
                                 child: Text(
+                                  //perulangan untuk kolom no
                               (i + 1).toString(),
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ))),
                             DataCell(Center(
+                              //data tanggal dimasukkan ke dalam row
                                 child: Text(widget.detail[i]['tanggal']))),
                             DataCell(Center(
+                              //data tinggi air dimasukkan ke dalam row
                                 child: Text(widget.detail[i]['tinggi_air']))),
                             DataCell(Center(
+                              //data curah hujan dimasukkan ke dalam row
                                 child: Text(widget.detail[i]['curah_hujan']))),
                           ],
                         ),
@@ -248,6 +252,7 @@ class _ItemListState extends State<ItemList> {
       );
     } else {
       return Center(
+        //jika data kosong
         child: Text('Data Kosong'),
       );
     }

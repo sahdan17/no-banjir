@@ -14,12 +14,15 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+
+  //API dari db untuk proses read data lokasi
   Future<List<dynamic>> getData() async {
     final response =
         await http.get(Uri.parse("http://10.0.2.2/no-banjir/get.php"));
     return json.decode(response.body);
   }
 
+  //API dari db untuk proses read data detail
   Future<List<dynamic>> getDetail(String nodeid) async {
     final response = await http
         .get(Uri.parse("http://10.0.2.2/no-banjir/detail.php?node_id=$nodeid"));
@@ -28,12 +31,15 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    //argumen berupa data list lokasi dimasukkan ke dalam list
     dynamic list = ModalRoute.of(context)!.settings.arguments;
     String node = list[0]['node_id'].toString();
     return Scaffold(
       appBar: AppBar(
         title: const Text("NO BANJIR"),
       ),
+      //data dimasukkan ke dalam list
       drawer: FutureBuilder<List>(
         future: getData(),
         builder: (context, snapshot) {
@@ -48,10 +54,7 @@ class _DetailPageState extends State<DetailPage> {
           }
         },
       ),
-      body: /*Center(
-        child: Text(node),
-      ),*/
-          FutureBuilder<List>(
+      body: FutureBuilder<List>(
         future: getDetail(node),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -69,6 +72,8 @@ class _DetailPageState extends State<DetailPage> {
   }
 }
 
+
+//class drawlist berisi data lokasi dari API yang dimasukkan ke dalam drawer
 class DrawList extends StatefulWidget {
   final List<dynamic> list;
   const DrawList({super.key, required this.list});
@@ -170,6 +175,7 @@ class ItemList extends StatefulWidget {
   State<ItemList> createState() => _ItemListState();
 }
 
+//class untuk inisiasi tipe data dari chart
 class ChartData {
   ChartData(this.x, this.y);
   final String x;
@@ -179,17 +185,22 @@ class ChartData {
 class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
+
+    //data dari curah hujan dimasukkan ke dalam chart pertama
     final List<ChartData> chartData = [
       for (int i = 0; i < (widget.detail.length); i++)
         ChartData(widget.detail[i]['tanggal'],
             double.parse(widget.detail[i]['curah_hujan']))
     ];
+
+    //data dari tinggi air dimasukkan ke dalam chart kedua
     final List<ChartData> chartData2 = [
       for (int i = 0; i < (widget.detail.length); i++)
         ChartData(widget.detail[i]['tanggal'],
             double.parse(widget.detail[i]['tinggi_air']))
     ];
     if (widget.detail.length != 0) {
+      //jika data tidak kosong maka lakukan
       return Scaffold(
           body: Container(
         child: Column(
@@ -208,6 +219,9 @@ class _ItemListState extends State<ItemList> {
                   'Data Terkini',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 )),
+
+                //container berikut berfungsi menampung 
+                //data tinggi air yang terakhir
             Container(
               padding: EdgeInsets.only(top: 10),
               child: Row(
@@ -245,6 +259,9 @@ class _ItemListState extends State<ItemList> {
                   SizedBox(
                     width: 20,
                   ),
+
+                  //container berikut berfungsi menampung 
+                  //data curah hujan yang terakhir
                   Container(
                     decoration: BoxDecoration(
                         border: Border(
@@ -277,6 +294,8 @@ class _ItemListState extends State<ItemList> {
                 ],
               ),
             ),
+
+            //container untuk membuat legenda pada chart
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -372,6 +391,9 @@ class _ItemListState extends State<ItemList> {
                           primaryXAxis: CategoryAxis(),
                           series: <ChartSeries<ChartData, String>>[
                             // Renders column chart
+
+                            //chart pertama untuk melakukan visualisasi data
+                            //dari tinggi air
                             LineSeries<ChartData, String>(
                               markerSettings: MarkerSettings(
                                   height: 6,
@@ -383,6 +405,9 @@ class _ItemListState extends State<ItemList> {
                               xValueMapper: (ChartData data, _) => data.x,
                               yValueMapper: (ChartData data, _) => data.y,
                             ),
+
+                            //chart kedua untuk melakukan visualisasi data 
+                            //dari curah hujan
                             LineSeries<ChartData, String>(
                                 markerSettings: MarkerSettings(
                                     height: 6,
@@ -400,6 +425,7 @@ class _ItemListState extends State<ItemList> {
       ));
     } else {
       return Center(
+        //jika data kosong
         child: Text('Data Kosong'),
       );
     }

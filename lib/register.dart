@@ -10,9 +10,13 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  //untuk menampung semua teks
   TextEditingController textControllerUsername = TextEditingController();
   TextEditingController textControllerPassword = TextEditingController();
   TextEditingController textControllerPasswordConfirm = TextEditingController();
+
+  //API dari db untuk melakukan proses input data username dan password
   void tambahData(String username, String password) async {
     String sql =
         "http://10.0.2.2/no-banjir/register.php?username=$username&password=$password";
@@ -73,17 +77,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   )),
               ElevatedButton(
                   onPressed: () {
+                    // validasi, jika password yang diinput sama dengan
+                    // password konfirmasi, maka data masuk ke db
                     if (textControllerPassword.text ==
                         textControllerPasswordConfirm.text) {
                       tambahData(textControllerUsername.text,
                           textControllerPassword.text);
                       Navigator.pushNamed(context, '/login');
                     } else {
+                      //snackbar jika password konfirmasi salah
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Password Konfirmasi Salah')));
                     }
                   },
                   child: Text('Register')),
+
+                  //tombol jika user ingin ke halaman login
               Container(
                 margin: EdgeInsets.only(right: 30),
                 alignment: Alignment.centerRight,

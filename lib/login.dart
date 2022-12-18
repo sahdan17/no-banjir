@@ -11,6 +11,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  //future list getdata() berfungsi sebagai API dari database
+  //untuk mengambil data melalui json
   Future<List<dynamic>> getData() async {
     final response =
         await http.get(Uri.parse("http://10.0.2.2/no-banjir/login.php"));
@@ -23,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: Text('Login Page'),
       ),
+
+      // data dari getdata() dimasukkan ke dalam sebuah builder
       body: FutureBuilder<List>(
         future: getData(),
         builder: (context, snapshot) {
@@ -42,6 +47,8 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class Login extends StatefulWidget {
+
+  //data dari builder dimasukkan ke sebuah list dynamic dengan nama list
   final List<dynamic> list;
   const Login({super.key, required this.list});
 
@@ -51,6 +58,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  //untuk menampung username dan password
   TextEditingController textControllerUsername = TextEditingController();
   TextEditingController textControllerPassword = TextEditingController();
   @override
@@ -87,16 +96,23 @@ class _LoginState extends State<Login> {
               )),
           ElevatedButton(
               onPressed: () {
+
+                //proses login, jika username dan password sama dengan yang ada
+                //di db, user akan dinavigasi ke halaman dashboard
                 for (int i = 0; i < widget.list.length; i++)
                   if ((widget.list[i]['username']) ==
                           textControllerUsername.text &&
                       (widget.list[i]['password']) ==
                           textControllerPassword.text) {
+
+                            //argumen username dikirimkan ke halaman dashboard
                     Navigator.pushNamed(context, '/dashboard',
                         arguments: widget.list[i]['username']);
                   } else {}
               },
               child: Text('Login')),
+
+              //sebuah tombol untuk mengarahkan user ke halaman register
           Container(
             margin: EdgeInsets.only(right: 30),
             alignment: Alignment.centerRight,

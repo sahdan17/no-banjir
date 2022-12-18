@@ -18,12 +18,15 @@ class _AddLokasiPageState extends State<AddLokasiPage> {
   TextEditingController textNama = TextEditingController();
   TextEditingController textLat = TextEditingController();
   TextEditingController textLng = TextEditingController();
+
+  //API dari db untuk mengambil data lokasi
   Future<List<dynamic>> getData() async {
     final response =
         await http.get(Uri.parse("http://10.0.2.2/no-banjir/get.php"));
     return json.decode(response.body);
   }
 
+  //API dari db untuk mengambil data detail
   Future<List<dynamic>> getDetail(String nodeid) async {
     final response = await http
         .get(Uri.parse("http://10.0.2.2/no-banjir/detail.php?node_id=$nodeid"));
@@ -32,11 +35,15 @@ class _AddLokasiPageState extends State<AddLokasiPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    //argumen username
     String username = ModalRoute.of(context)!.settings.arguments.toString();
     return Scaffold(
         appBar: AppBar(
           title: const Text("NO BANJIR"),
         ),
+
+        //data lokasi dimasukkan ke dalam list
         drawer: FutureBuilder<List>(
           future: getData(),
           builder: (context, snapshot) {
@@ -98,6 +105,9 @@ class _AddLokasiPageState extends State<AddLokasiPage> {
                   child: ElevatedButton(
                     child: Text('Submit Data'),
                     onPressed: () {
+                      //data dari formfield dimasukkan sebagai body untuk 
+                      //melakukan proses input ke db setelah itu dinavigasi 
+                      //ke halaman dashboard dan mengirimkan argumen username
                       tambahData(
                           textNode.text,
                           textNama.text,
@@ -114,6 +124,7 @@ class _AddLokasiPageState extends State<AddLokasiPage> {
         ));
   }
 
+  //API untuk melakukan proses create data ke db
   void tambahData(String nodeid, String namaloc, double lat, double lng) async {
     String sql =
         "http://10.0.2.2/no-banjir/add.php?node_id=$nodeid&nama_loc=$namaloc&latitude=$lat&longitude=$lng";
@@ -122,6 +133,8 @@ class _AddLokasiPageState extends State<AddLokasiPage> {
 }
 
 class DrawList extends StatefulWidget {
+
+  //data dari API dimasukkan ke list
   final List<dynamic> list;
   const DrawList({super.key, required this.list});
 
@@ -132,8 +145,12 @@ class DrawList extends StatefulWidget {
 class _DrawListState extends State<DrawList> {
   @override
   Widget build(BuildContext context) {
+
+    //argumen dimasukkan ke variabel username
     String username = ModalRoute.of(context)!.settings.arguments.toString();
     if (widget.list != null) {
+      //jika data list tidak kosong maka tampilkan drawer
+      //drawer berisi data lokasi dari API
       return Drawer(
         child: ListView(
           children: [
